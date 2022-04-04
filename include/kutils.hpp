@@ -12,14 +12,14 @@
 #include <algorithm>
 #include <type_traits>
 
+namespace kutils {
 namespace constants {
 static const char* SIMPLE_DATE_FORMAT{"%Y-%m-%dT%H:%M:%S"};
 } // namespace constants
-
 ///////////////////////////////////////////////////////////////
 template<typename... Args>
 static void log(Args... args) { for (const auto& s : { args... }) std::cout << s; std::cout << std::endl; }
-
+////////////////////////////////////////////////
 [[ maybe_unused ]]
 static std::string DecodeHTML(const std::string& text)
 {
@@ -49,14 +49,12 @@ static std::string DecodeHTML(const std::string& text)
       }
     }
 
-  if (!flag)
-    decoded += text[i];
-
+    if (!flag) decoded += text[i];
   }
 
   return decoded;
 }
-
+////////////////////////////////////////////////
 [[ maybe_unused ]]
 static std::string FloatToDecimalString(float n)
 {
@@ -64,7 +62,7 @@ static std::string FloatToDecimalString(float n)
   ss << std::fixed << std::setprecision(2) << n;
   return ss.str();
 }
-
+////////////////////////////////////////////////
 [[ maybe_unused ]]
 static std::string ToLower(const std::string& s)
 {
@@ -72,6 +70,7 @@ static std::string ToLower(const std::string& s)
   std::transform(t.begin(), t.end(), t.begin(), [](char c) { return tolower(c); });
   return t;
 }
+////////////////////////////////////////////////
 struct MimeType
 {
   std::string name;
@@ -80,6 +79,7 @@ struct MimeType
   bool IsVideo() const { return video;    }
   bool IsPhoto() const { return !(video); }
 };
+////////////////////////////////////////////////
 
 [[ maybe_unused ]]
 static MimeType GetMimeType(const std::string& path)
@@ -115,51 +115,26 @@ static MimeType GetMimeType(const std::string& path)
   }
   return MimeType{"unknown", false};
 }
-
+////////////////////////////////////////////////
 [[ maybe_unused ]]
-static std::string GetExecutableCWD()
+static std::string GetCWD(size_t name_length)
 {
   std::string full_path{realpath("/proc/self/exe", NULL)};
-  return full_path.substr(0, full_path.size() - (13));
+  return full_path.substr(0, full_path.size() - (name_length));
 }
-
-
-
-/**
- * SanitizeJSON
- *
- * Helper function to remove escaped double quotes from a string
- *
- * @param [in] {std::string&} A reference to a string object
- */
-inline std::string StripLineBreaks(std::string s) {
-  s.erase(
-    std::remove(s.begin(), s.end(),'\n'),
-    s.end()
-  );
-
+////////////////////////////////////////////////
+static std::string StripBreaks(std::string s)
+{
+  s.erase(std::remove(s.begin(), s.end(),'\n'), s.end());
   return s;
 }
-
-/**
- * SanitizeInput
- *
- * Helper function to remove quotes from a string
- *
- * @param   [in] {std::string}
- * @returns [in] {std::string}
- */
-inline std::string SanitizeInput(std::string s) {
-  s.erase(
-    std::remove_if(s.begin(), s.end(), [](char c){
-      return c == '\'' || c == '\"';
-    }),
-  s.end());
-
+////////////////////////////////////////////////
+static std::string SanitizeInput(std::string s)
+{
+  s.erase(std::remove_if(s.begin(), s.end(), [](char c){ return c == '\'' || c == '\"'; }), s.end());
   return s;
 }
-
-
+////////////////////////////////////////////////
 [[ maybe_unused ]]
 static bool IsAllNum(const std::string& s)
 {
@@ -167,7 +142,6 @@ static bool IsAllNum(const std::string& s)
     if (!std::isdigit(c)) return false;
   return true;
 }
-
 static std::string AlphaNumericOnly(std::string s)
 {
   s.erase(std::remove_if(
@@ -181,30 +155,23 @@ static std::string AlphaNumericOnly(std::string s)
 
   return s;
 }
-
-/**
- * SaveToFile
- */
-inline void SaveToFile(std::string data, std::string path) {
+////////////////////////////////////////////////
+static void SaveToFile(std::string data, std::string path)
+{
   std::ofstream o{path};
   o << data;
 }
-
-std::string read_file(const std::string& path)
+////////////////////////////////////////////////
+std::string ReadFile(const std::string& path)
 {
   std::ifstream fs{path};
   std::stringstream ss;
   ss << fs.rdbuf();
   return ss.str();
 }
-
-/**
- * to_unixtime
- *
- * @param
- * @returns
- */
-inline const std::time_t to_unixtime(const char* datetime) {
+////////////////////////////////////////////////
+static const std::time_t to_unixtime(const char* datetime)
+{
   std::tm            t{};
   std::istringstream ss{datetime};
 
@@ -212,14 +179,9 @@ inline const std::time_t to_unixtime(const char* datetime) {
 
   return mktime(&t);
 }
-
-/**
- * to_readable_time
- *
- * @param
- * @returns
- */
-inline std::string to_readable_time(const char* datetime) {
+////////////////////////////////////////////////
+static std::string to_readable_time(const char* datetime)
+{
   uint8_t            buffer_size{24};
   std::tm            t{};
   std::istringstream ss{datetime};
@@ -230,14 +192,9 @@ inline std::string to_readable_time(const char* datetime) {
 
   return std::string{b};
 }
-
-/**
- * to_readable_time
- *
- * @param
- * @returns
- */
-inline std::string to_readable_time(const std::string datetime) {
+////////////////////////////////////////////////
+static std::string to_readable_time(const std::string datetime)
+{
   uint8_t            buffer_size{24};
   std::tm            t{};
   std::istringstream ss{datetime};
@@ -248,8 +205,9 @@ inline std::string to_readable_time(const std::string datetime) {
 
   return std::string{b};
 }
-
-inline std::string get_simple_datetime() {
+////////////////////////////////////////////////
+static std::string get_simple_datetime()
+{
   uint8_t            buffer_size{24};
   char               b[buffer_size];
   auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -259,9 +217,9 @@ inline std::string get_simple_datetime() {
       return std::string{b};
   throw std::runtime_error{"Failed to get current date as string"};
 }
-
-// template <typename T = float>
-inline std::string human_readable_duration(std::chrono::duration<int64_t> delta) {
+////////////////////////////////////////////////
+static std::string human_readable_duration(std::chrono::duration<int64_t> delta)
+{
   using namespace std;
   using namespace std::chrono;
   using days = duration<int, ratio<86400>>;
@@ -287,15 +245,14 @@ inline std::string human_readable_duration(std::chrono::duration<int64_t> delta)
 
   return ss.str();
 };
-
-
-// template <typename T = float>
-inline std::string delta_to_string(std::chrono::duration<int64_t, std::nano> d) {
+////////////////////////////////////////////////
+static std::string delta_to_string(std::chrono::duration<int64_t, std::nano> d)
+{
   return human_readable_duration(std::chrono::duration_cast<std::chrono::seconds>(d));
 }
-
-// template <typename T = float>
-inline std::chrono::duration<int64_t, std::nano> get_datetime_delta(std::string dt1, std::string dt2) {
+////////////////////////////////////////////////
+static std::chrono::duration<int64_t, std::nano> get_datetime_delta(std::string dt1, std::string dt2)
+{
   std::tm            t{};
   std::istringstream ss{dt1};
   ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
@@ -312,9 +269,11 @@ inline std::chrono::duration<int64_t, std::nano> get_datetime_delta(std::string 
   std::chrono::duration<int64_t, std::nano> elapsed = tp_1 - tp_2;
   return elapsed;
 }
-
-// template <typename T = float>
-inline std::string datetime_delta_string(std::string dt1, std::string dt2) {
+////////////////////////////////////////////////
+static std::string datetime_delta_string(std::string dt1, std::string dt2)
+{
   std::chrono::duration<int64_t, std::nano> datetime_delta = get_datetime_delta(dt1, dt2);
   return delta_to_string(datetime_delta);
 }
+} // ns kutils
+
