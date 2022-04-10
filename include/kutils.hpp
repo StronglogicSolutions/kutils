@@ -156,6 +156,27 @@ static std::string AlphaNumericOnly(std::string s)
   return s;
 }
 ////////////////////////////////////////////////
+[[ maybe_unused ]]
+static std::string ParseFilename(const std::string& full_url)
+{
+  auto FindProt  = []         (const auto& s) { auto i = s.find_last_of("://"); return (i != s.npos) ? i + 1 : 0; };
+  auto FindQuery = []         (const auto& s) { auto i = s.find_first_of('?');  return (i != s.npos) ? i : 0;     };
+  auto FindExt   = []         (const auto& s) { auto i = s.find_last_of('.');   return (i != s.npos) ? i : 0;     };
+  auto SimpleURL = [FindQuery](const auto& s) {                                 return s.substr(0, FindQuery(s)); };
+  auto Filename  = [SimpleURL, FindProt, FindExt](const auto& full_url)
+  {
+    const auto url       = SimpleURL(full_url);
+    const auto uri       = url.substr(FindProt(url));
+    const auto ext       = FindExt(uri);
+    const auto sub_uri   = (ext) ? uri.substr(0, ext) : uri;
+    const auto extension = uri.substr(ext);
+    const auto sub_ext   = FindExt(sub_uri);
+    return (sub_ext) ? sub_uri.substr(sub_ext) + extension : sub_uri + extension;
+  };
+
+  return Filename(full_url);
+}
+////////////////////////////////////////////////
 static void SaveToFile(std::string data, std::string path)
 {
   std::ofstream o{path};
