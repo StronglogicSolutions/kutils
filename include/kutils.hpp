@@ -17,8 +17,21 @@ namespace constants {
 static const char* SIMPLE_DATE_FORMAT{"%Y-%m-%dT%H:%M:%S"};
 } // namespace constants
 ///////////////////////////////////////////////////////////////
+template <typename T>
+constexpr bool is_string_type = std::is_convertible_v<T, std::string_view>;
 template<typename... Args>
-static void log(Args... args) { for (const auto& s : { args... }) std::cout << s; std::cout << std::endl; }
+static void log(Args... args)
+{
+  if (!sizeof(args))
+    return
+
+  for (const auto& s : { args... })
+  {
+    using T = decltype(std::decay_t(s));
+    if constexpr (is_string_type<T>)
+      std::cout << s << std::endl;
+  }
+}
 ////////////////////////////////////////////////
 [[ maybe_unused ]]
 static std::string DecodeHTML(const std::string& text)
@@ -237,6 +250,11 @@ static std::string get_simple_datetime()
     if (std::strftime(b, sizeof(b), constants::SIMPLE_DATE_FORMAT, &tm))
       return std::string{b};
   throw std::runtime_error{"Failed to get current date as string"};
+}
+////////////////////////////////////////////////
+static int32_t get_unixtime()
+{
+  return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 ////////////////////////////////////////////////
 static std::string human_readable_duration(std::chrono::duration<int64_t> delta)
