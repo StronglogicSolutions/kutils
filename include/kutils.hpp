@@ -22,9 +22,8 @@ constexpr bool is_string_type = std::is_convertible_v<T, std::string_view>;
 template<typename... Args>
 static void log(Args... args)
 {
-  if (!sizeof(args))
-    return
-
+  if (!sizeof ...(args))
+    return;
   for (const auto& s : { args... })
   {
     using T = decltype(std::decay_t(s));
