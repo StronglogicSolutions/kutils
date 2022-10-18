@@ -24,9 +24,10 @@ static void log(Args... args)
 {
   if (!sizeof ...(args))
     return;
+
   for (const auto& s : { args... })
   {
-    using T = decltype(std::decay_t(s));
+    using T = std::decay_t<decltype(s)>;
     if constexpr (is_string_type<T>)
       std::cout << s << std::endl;
   }
@@ -195,7 +196,7 @@ static void SaveToFile(std::string data, std::string path)
   o << data;
 }
 ////////////////////////////////////////////////
-std::string ReadFile(const std::string& path)
+static std::string ReadFile(const std::string& path)
 {
   std::ifstream fs{path};
   std::stringstream ss;
@@ -256,6 +257,15 @@ static int32_t get_unixtime()
   return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 ////////////////////////////////////////////////
+static std::string from_unixtime(time_t unix_timestamp)
+{
+  char time_buf[80];
+  struct tm ts;
+  ts = *localtime(&unix_timestamp);
+  strftime(time_buf, sizeof(time_buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+  return time_buf;
+}
+////////////////////////////////////////////////
 static std::string human_readable_duration(std::chrono::duration<int64_t> delta)
 {
   using namespace std;
@@ -312,6 +322,18 @@ static std::string datetime_delta_string(std::string dt1, std::string dt2)
 {
   std::chrono::duration<int64_t, std::nano> datetime_delta = get_datetime_delta(dt1, dt2);
   return delta_to_string(datetime_delta);
+}
+////////////////////////////////////////////////
+static std::string generate_random_chars()
+{
+  srand(get_unixtime());
+  std::string r;
+  for (int n = rand(), t = n; t > 0;)
+  {
+    r += static_cast<char>(t % 10);
+    t /= 10;
+  }
+  return r;
 }
 } // ns kutils
 
