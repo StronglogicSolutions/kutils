@@ -16,7 +16,7 @@
 
 namespace kutils {
 namespace constants {
-inline const char* SIMPLE_DATE_FORMAT{"%Y-%m-%dT%H:%M:%S"};
+static const char* SIMPLE_DATE_FORMAT{"%Y-%m-%dT%H:%M:%S"};
 } // namespace constants
 ///////////////////////////////////////////////////////////////
 template <typename T>
@@ -206,7 +206,7 @@ inline std::string ReadFile(const std::string& path)
   return ss.str();
 }
 ////////////////////////////////////////////////
-inline const std::time_t to_unixtime(const char* datetime)
+inline std::time_t to_unixtime(const char* datetime)
 {
   std::tm            t{};
   std::istringstream ss{datetime};
@@ -259,6 +259,7 @@ inline int32_t get_unixtime()
   return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 ////////////////////////////////////////////////
+[[ maybe_unused ]]
 static std::string from_unixtime(time_t unix_timestamp)
 {
   char time_buf[80];
@@ -338,4 +339,3 @@ inline std::string generate_random_chars()
   return r;
 }
 } // ns kutils
-
