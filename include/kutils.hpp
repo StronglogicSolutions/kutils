@@ -31,8 +31,9 @@ inline void log(Args... args)
   {
     using T = std::decay_t<decltype(s)>;
     if constexpr (is_string_type<T>)
-      std::cout << s << std::endl;
+      std::cout << s;
   }
+  std::cout << std::endl;
 }
 ////////////////////////////////////////////////
 [[ maybe_unused ]]
@@ -343,9 +344,14 @@ class kargs
 {
   using argmap_t = std::unordered_map<std::string, std::string>;
 public:
-  kargs(int argc, const char* argv[])
+  kargs(int argc, char* argv[])
   {
-
+    for (int i = 1; i < argc; i++)
+    {
+      std::string arg = argv[i];
+      if (it_ = arg.find('='); it_ != std::string::npos)
+        args_[arg.front() == '-' ? arg.substr(2, it_ - 2) : arg.substr(0, it_)] = arg.substr(it_ + 1);
+    }
   }
 
   std::string get(const char* key)
@@ -357,5 +363,6 @@ public:
 
 private:
   argmap_t args_;
+  size_t   it_{0};
 };
 } // ns kutils
