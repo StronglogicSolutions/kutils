@@ -338,4 +338,24 @@ inline std::string generate_random_chars()
   }
   return r;
 }
+////////////////////////////////////////////////
+class kargs
+{
+  using argmap_t = std::unordered_map<std::string, std::string>;
+public:
+  kargs(int argc, const char* argv[])
+  {
+
+  }
+
+  std::string get(const char* key)
+  {
+    if (const auto it = args_.find(key); it != args_.end())
+      return it->second;
+    return "";
+  }
+
+private:
+  argmap_t args_;
+};
 } // ns kutils
