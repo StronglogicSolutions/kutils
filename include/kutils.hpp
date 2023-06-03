@@ -272,26 +272,24 @@ static std::string from_unixtime(time_t unix_timestamp)
 ////////////////////////////////////////////////
 inline std::string human_readable_duration(std::chrono::duration<int64_t> delta)
 {
-  using namespace std;
-  using namespace std::chrono;
-  using days = duration<int, ratio<86400>>;
+  using days = std::chrono::duration<int, std::ratio<86400>>;
 
   std::stringstream ss{};
 
   char fill = ss.fill();
   ss.fill('0');
-  auto d = duration_cast<days>(delta);
+  auto d = std::chrono::duration_cast<days>(delta);
   delta -= d;
-  auto h = duration_cast<hours>(delta);
+  auto h = std::chrono::duration_cast<std::chrono::hours>(delta);
   delta -= h;
-  auto m = duration_cast<minutes>(delta);
+  auto m = std::chrono::duration_cast<std::chrono::minutes>(delta);
   delta -= m;
-  auto s = duration_cast<seconds>(delta);
+  auto s = std::chrono::duration_cast<std::chrono::seconds>(delta);
 
-  ss  << setw(2) << d.count() << "d:"
-      << setw(2) << h.count() << "h:"
-      << setw(2) << m.count() << "m:"
-      << setw(2) << s.count() << 's';
+  ss  << std::setw(2) << d.count() << "d:"
+      << std::setw(2) << h.count() << "h:"
+      << std::setw(2) << m.count() << "m:"
+      << std::setw(2) << s.count() << 's';
 
   ss.fill(fill);
 
