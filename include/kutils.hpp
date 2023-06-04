@@ -338,6 +338,32 @@ inline std::string generate_random_chars()
   return r;
 }
 ////////////////////////////////////////////////
+inline std::string UnescapeQuotes(std::string s)
+{
+  s.erase(std::remove(s.begin(), s.end(),'\"'), s.end());
+  return s;
+}
+////////////////////////////////////////////////
+inline std::vector<std::string> urls_from_string(std::string input_string, char delim = '>')
+{
+  std::string              s = UnescapeQuotes(input_string);
+  std::vector<std::string> urls;
+
+  if (!s.empty())
+  {
+    auto pos = s.find_first_of(delim);
+    while (pos != s.npos)
+    {
+      urls.emplace_back(s.substr(0, pos));
+      s   = s.substr(pos + 1);
+      pos = s.find_first_of(delim);
+    }
+
+    urls.emplace_back(s);
+  }
+  return urls;
+}
+////////////////////////////////////////////////
 class kargs
 {
   using argmap_t = std::unordered_map<std::string, std::string>;
