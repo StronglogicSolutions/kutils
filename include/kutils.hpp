@@ -260,6 +260,11 @@ inline int32_t get_unixtime()
   return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 ////////////////////////////////////////////////
+inline std::string get_unix_tstring()
+{
+  return std::to_string(get_unixtime());
+}
+////////////////////////////////////////////////
 [[ maybe_unused ]]
 static std::string from_unixtime(time_t unix_timestamp)
 {
