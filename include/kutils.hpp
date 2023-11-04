@@ -429,4 +429,44 @@ private:
 //-----------------------------------------------------------------------
   time_point_t _last{now()};
 };
+//----------------------------------------------------------------------------------------------
+template <int32_t MAX = 4, int32_t SECONDS = 60>
+class bucket
+{
+using clock_t    = std::chrono::steady_clock;
+using duration_t = clock_t::duration;
+static constexpr auto g_max = clock_t::duration{std::chrono::seconds(SECONDS)};
+//------------------------------------
+public:
+  bool request(int quantity)
+  {
+    refill();
+
+    const auto required = (quantity * (rate_));
+    const auto result   = required <= available_;
+
+    if (result)
+      available_ -= required;
+
+    return result;
+  }
+
+  bool has_token() const
+  {
+    return (available_ >= rate_);
+  }
+//------------------------------------
+private:
+  void refill()
+  {
+    const auto now  = clock_t::now();
+    available_     += now - last_refill_;
+    available_      = std::min(available_, g_max);
+    last_refill_    = now;
+  }
+//------------------------------------
+  clock_t::duration   available_  {g_max};
+  clock_t::duration   rate_       {g_max / MAX};
+  clock_t::time_point last_refill_{clock_t::now()};
+};
 } // ns kutils
