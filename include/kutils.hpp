@@ -13,6 +13,7 @@
 #include <sstream>
 #include <algorithm>
 #include <type_traits>
+#include <thread>
 
 namespace kutils {
 namespace constants {
@@ -367,6 +368,16 @@ inline std::vector<std::string> urls_from_string(std::string input_string, char 
     urls.emplace_back(s);
   }
   return urls;
+}
+////////////////////////////////////////////////
+inline void make_event(std::function<void()> f, int ms = 5000)
+{
+  std::thread{[f, ms]
+  {
+    if (ms)
+      std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+    f();
+  }}.detach();
 }
 ////////////////////////////////////////////////
 class kargs
