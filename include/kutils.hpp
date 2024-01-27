@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <thread>
+#include <filesystem>
 
 namespace kutils {
 namespace constants {
@@ -192,6 +193,22 @@ inline std::string ParseFilename(const std::string& full_url)
   };
 
   return Filename(full_url);
+}
+////////////////////////////////////////////////
+bool create_dir(const std::string& path)
+{
+  namespace fs = std::filesystem;
+
+  try
+  {
+    if (!fs::exists(path))
+      fs::create_directory(path);
+    return true;
+  }
+  catch (const std::exception& e)
+  {
+    return false;
+  }
 }
 ////////////////////////////////////////////////
 inline void SaveToFile(std::string data, std::string path)
