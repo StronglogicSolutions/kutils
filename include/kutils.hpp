@@ -441,6 +441,12 @@ public:
     }
     return false;
   }
+//-----------------------------------------------------------------------
+  void
+  stop()
+  {
+    _last = now() - std::chrono::milliseconds(INTERVAL);
+  }
 
 private:
   bool
