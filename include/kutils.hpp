@@ -195,7 +195,7 @@ inline std::string ParseFilename(const std::string& full_url)
   return Filename(full_url);
 }
 ////////////////////////////////////////////////
-bool create_dir(const std::string& path)
+inline bool create_dir(const std::string& path)
 {
   namespace fs = std::filesystem;
 
@@ -446,6 +446,12 @@ public:
   stop()
   {
     _last = now() - std::chrono::milliseconds(INTERVAL);
+  }
+  //-----------------------------------------------------------------------
+  void
+  reset()
+  {
+    _last = now();
   }
 
 private:
